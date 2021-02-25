@@ -1,0 +1,10 @@
+---
+- name: user creation using host variables
+  hosts: 172.31.93.244
+  tasks:
+   - name: create user
+     user:
+      name: "{{a}}"
+      password: "{{b}}"
+      uid: "{{c}}"
+...      

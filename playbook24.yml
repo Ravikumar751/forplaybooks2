@@ -1,0 +1,49 @@
+---
+- name: install required software
+  hosts: all
+  tasks: 
+   - name: install s/w applications
+     apt: 
+      name: "{{item.a}}"
+      state: present
+      update_cache: "{{item.b}}"
+     with_items: 
+      - {a: openjdk-8-jdk,b: yes}
+      - {a: git,b: no}
+      - {a: maven,b: no}
+      - {a: tomcat8,b: no}
+      - {a: tomcat8-admin,b: no}
+- name: download and build the code
+  hosts: jenkinsserver
+  tasks: 
+   - name: continuous download
+     git: 
+      repo: https://github.com/intelliqittrainings/maven.git
+      dest: /home/ubuntu/mygit
+   - name: continuos build
+     shell: cd /home/ubuntu/mygit/webapp;mvn package
+   - name: fetch artifact from jenkinsserver to controller
+     fetch: 
+      src: /home/ubuntu/mygit/webapp/target/webapp.war
+      dest: /tmp
+- name: deploy artifact into qaserver and run selenium tests
+  hosts: qaserver 
+  tasks:
+   - name: continuous deployment
+     copy:
+      src: /tmp/172.31.93.244/home/ubuntu/mygit/webapp/target/webapp.war
+      dest: /var/lib/tomcat8/webapps/testapp.war 
+   - name: download the selenium scripts and execute them
+     git: 
+      repo: https://github.com/intelliqittrainings/FunctionalTesting.git
+      dest: /home/ubuntu/testgit
+   - name: execute the selenium scripts
+     shell: java -jar /home/ubuntu/testgit/testing.jar
+- name: continuous delivery
+  hosts: prodserver
+  tasks:
+   - name: copy artifact into tomcat on prodserver
+     copy:
+      src: /tmp/172.31.93.244/home/ubuntu/mygit/webapp/target/webapp.war
+      dest: /var/lib/tomcat8/webapps/prodapp.war
+     

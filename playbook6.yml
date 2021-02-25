@@ -1,0 +1,11 @@
+---
+- name: lmplementing host scope variables
+  hosts: webserver
+  tasks: 
+   - name: install firwealld
+     apt: 
+      name: "{{a}}"
+      state: "{{b}}"
+      update_cache: "{{c}}"
+...
+

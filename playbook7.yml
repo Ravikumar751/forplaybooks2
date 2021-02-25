@@ -1,0 +1,10 @@
+---
+- name: create file using hosts variables
+  hosts: webserver
+  tasks: 
+   - name: create afile
+     file:
+      name: "{{d}}"
+      state: "{{e}}"
+      mode: "{{f}}"      
+...

@@ -1,0 +1,6 @@
+---
+- name: call child playbook
+  hosts: all
+  tasks: 
+   - name: call child playbook for user creation
+     include: playbook20.yml
